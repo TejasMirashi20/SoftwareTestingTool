@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PyAssure – Complex Code Testing Dashboard (Python Edition)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body data-max-bytes="{{ max_bytes }}">
+
+<nav class="navbar navbar-expand-lg navbar-dark app-nav sticky-top">
+  <div class="container-xl">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#top">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <rect width="34" height="34" rx="9" fill="#4f46e5"/>
+        <path d="M9 18.5l5 5 11-12" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="25" cy="9" r="3" fill="#fbbf24"/>
+      </svg>
+      <span class="lh-sm"><strong>PyAssure</strong><small class="d-block brand-sub">Complex Code Testing Dashboard</small></span>
+      <span class="badge rounded-pill badge-py ms-1"><i class="bi bi-filetype-py"></i> Python Edition</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+    <div id="nav" class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#editor"><i class="bi bi-code-square"></i> Editor</a></li>
+        <li class="nav-item"><a class="nav-link" href="#metrics"><i class="bi bi-speedometer2"></i> Metrics</a></li>
+        <li class="nav-item"><a class="nav-link" href="#charts"><i class="bi bi-graph-up"></i> Charts</a></li>
+        <li class="nav-item"><a class="nav-link" href="#results"><i class="bi bi-list-check"></i> Results</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container-xl py-4" id="top">
+
+  <section class="hero mb-4">
+    <h1 class="h3 mb-1">Automated Software Testing Suite</h1>
+    <p class="mb-0 text-secondary">Paste or upload Python code and run <strong>25 automated checks</strong> across
+      <strong>PyTest</strong>, <strong>Coverage.py</strong>, <strong>Pylint/Flake8</strong>,
+      <strong>Bandit</strong> and <strong>PEP&nbsp;8</strong>, plus McCabe complexity defect-risk prediction.
+      Your code is analysed in an isolated sandbox process – never inside the web server.</p>
+  </section>
+
+  <!-- ============================ EDITOR ============================ -->
+  <section id="editor" class="card shadow-sm mb-4">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+      <span class="fw-semibold me-auto"><i class="bi bi-code-square text-primary"></i> Python source code</span>
+      <select id="sampleSelect" class="form-select form-select-sm w-auto" aria-label="Load sample program">
+        <option value="">Load sample program…</option>
+      </select>
+      <input type="file" id="fileInput" accept=".py,text/x-python" hidden>
+      <button class="btn btn-outline-secondary btn-sm" id="uploadBtn"><i class="bi bi-upload"></i> Upload .py</button>
+      <button class="btn btn-outline-danger btn-sm" id="clearBtn"><i class="bi bi-eraser"></i> Clear</button>
+    </div>
+    <div class="card-body p-0"><textarea id="codeInput"></textarea></div>
+    <div class="card-footer d-flex flex-wrap align-items-center gap-3">
+      <small class="text-secondary" id="codeStats">0 lines · 0 characters</small>
+      <div id="inputError" class="alert alert-danger py-1 px-2 mb-0 small d-none" role="alert"></div>
+      <button class="btn btn-primary btn-lg ms-auto run-btn" id="runBtn">
+        <span class="spinner-border spinner-border-sm d-none me-2" id="runSpinner" role="status"></span>
+        <i class="bi bi-play-circle-fill me-1" id="runIcon"></i><span id="runLabel">Run Automated Testing Suite (25 Tests)</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================ RESULTS ============================ -->
+  <div id="placeholder" class="empty-state text-center text-secondary py-5">
+    <i class="bi bi-clipboard2-pulse display-4"></i>
+    <p class="mt-2 mb-0">No analysis yet. Load a sample or paste code, then click <strong>Run Automated Testing Suite</strong>.</p>
+  </div>
+
+  <div id="resultsArea" class="d-none">
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+      <h2 class="h5 mb-0"><i class="bi bi-clipboard2-data text-primary"></i> Analysis report</h2>
+      <span class="badge text-bg-light border" id="timestamp"></span>
+      <span class="badge text-bg-light border" id="duration"></span>
+      <div class="ms-auto d-flex gap-2">
+        <div class="dropdown">
+          <button class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-download"></i> Download report</button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><button class="dropdown-item" data-dl="html"><i class="bi bi-filetype-html"></i> HTML report</button></li>
+            <li><button class="dropdown-item" data-dl="json"><i class="bi bi-filetype-json"></i> JSON data</button></li>
+            <li><button class="dropdown-item" data-dl="csv"><i class="bi bi-filetype-csv"></i> CSV table</button></li>
+          </ul>
+        </div>
+        <button class="btn btn-outline-secondary btn-sm" id="resetBtn"><i class="bi bi-arrow-counterclockwise"></i> Reset analysis</button>
+      </div>
+    </div>
+
+    <div id="syntaxBanner" class="alert alert-danger d-none"></div>
+    <div id="notesBanner" class="alert alert-warning d-none"></div>
+
+    <!-- metrics -->
+    <section id="metrics" class="mb-4">
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-lg-3"><div class="metric card h-100"><div class="card-body text-center">
+          <div class="ring" id="ringHealth"><span id="mHealth">–</span></div>
+          <div class="metric-label">Overall Health Score</div><small class="text-secondary">(passed + ½ warnings) / 25</small></div></div></div>
+        <div class="col-6 col-lg-3"><div class="metric card h-100"><div class="card-body text-center">
+          <div class="ring" id="ringCov"><span id="mCov">–</span></div>
+          <div class="metric-label">Statement Coverage</div><small class="text-secondary" id="mCovSub">coverage.py</small></div></div></div>
+        <div class="col-6 col-lg-3"><div class="metric card h-100"><div class="card-body text-center">
+          <div class="big-number" id="mCC">–</div>
+          <div class="metric-label">Cyclomatic Complexity</div><small class="text-secondary" id="mCCSub">max V(G)</small></div></div></div>
+        <div class="col-6 col-lg-3"><div class="metric card h-100"><div class="card-body text-center">
+          <div class="big-number"><span class="risk-pill" id="mRisk">–</span></div>
+          <div class="metric-label">Defect Risk <i class="bi bi-info-circle" title="Heuristic estimate, not a guaranteed defect probability"></i></div>
+          <small class="text-secondary">heuristic estimate</small></div></div></div>
+      </div>
+      <div class="row g-3">
+        <div class="col-6 col-md"><div class="stat card"><div class="card-body"><i class="bi bi-check-circle-fill text-success"></i><div><div class="stat-num" id="mPassed">–</div><div class="stat-label">Tests passed</div></div></div></div></div>
+        <div class="col-6 col-md"><div class="stat card"><div class="card-body"><i class="bi bi-exclamation-triangle-fill text-warning"></i><div><div class="stat-num" id="mWarn">–</div><div class="stat-label">Warnings</div></div></div></div></div>
+        <div class="col-6 col-md"><div class="stat card"><div class="card-body"><i class="bi bi-x-circle-fill text-danger"></i><div><div class="stat-num" id="mFailed">–</div><div class="stat-label">Failed tests</div></div></div></div></div>
+        <div class="col-6 col-md"><div class="stat card"><div class="card-body"><i class="bi bi-shield-exclamation text-danger"></i><div><div class="stat-num" id="mSec">–</div><div class="stat-label">Security issues</div></div></div></div></div>
+        <div class="col-12 col-md"><div class="stat card"><div class="card-body"><i class="bi bi-bug-fill text-primary"></i><div><div class="stat-num" id="mCode">–</div><div class="stat-label">Code issues</div></div></div></div></div>
+      </div>
+    </section>
+
+    <!-- defect prediction -->
+    <section class="card shadow-sm mb-4" id="defect">
+      <div class="card-header fw-semibold"><i class="bi bi-activity text-primary"></i> Defect prediction &amp; complexity risk (McCabe)</div>
+      <div class="card-body">
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <p class="small text-secondary mb-2" id="ccFormula"></p>
+            <div class="band-bar mb-1"><div class="b-low">LOW<br><small>1–5</small></div><div class="b-mod">MODERATE<br><small>6–12</small></div><div class="b-high">HIGH<br><small>13–25</small></div><div class="b-crit">CRITICAL<br><small>&gt;25</small></div></div>
+            <div class="band-marker"><i class="bi bi-caret-up-fill" id="bandMarker"></i></div>
+            <div class="small mt-3" id="ccSummary"></div>
+            <div class="table-responsive mt-2"><table class="table table-sm align-middle mb-0">
+              <thead><tr><th>Routine</th><th>Line</th><th class="text-end">V(G)</th><th>Rank</th></tr></thead>
+              <tbody id="ccTable"></tbody></table></div>
+          </div>
+          <div class="col-lg-7">
+            <h3 class="h6">Recommendations</h3>
+            <ul class="mb-3" id="ccRecs"></ul>
+            <div class="alert alert-secondary small mb-0" id="ccDisclaimer"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- charts -->
+    <section id="charts" class="row g-3 mb-4">
+      <div class="col-lg-5"><div class="card h-100 shadow-sm"><div class="card-header fw-semibold"><i class="bi bi-radar text-primary"></i> Tool performance</div>
+        <div class="card-body"><div class="chart-box"><canvas id="radarChart"></canvas></div></div></div></div>
+      <div class="col-lg-4"><div class="card h-100 shadow-sm"><div class="card-header fw-semibold"><i class="bi bi-pie-chart text-primary"></i> Outcome distribution</div>
+        <div class="card-body"><div class="chart-box"><canvas id="doughnutChart"></canvas></div></div></div></div>
+      <div class="col-lg-3"><div class="card h-100 shadow-sm"><div class="card-header fw-semibold"><i class="bi bi-bar-chart-steps text-primary"></i> Coverage progress</div>
+        <div class="card-body" id="covBars"></div></div></div>
+    </section>
+
+    <!-- detailed results -->
+    <section id="results" class="card shadow-sm mb-4">
+      <div class="card-header">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+          <span class="fw-semibold me-auto"><i class="bi bi-list-check text-primary"></i> Detailed test results <small class="text-secondary" id="shownCount"></small></span>
+          <div class="input-group input-group-sm w-auto"><span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="search" class="form-control" id="searchBox" placeholder="Search id, name, explanation…"></div>
+          <select id="statusFilter" class="form-select form-select-sm w-auto">
+            <option value="">All statuses</option><option>PASSED</option><option>WARNING</option><option>FAILED</option></select>
+        </div>
+        <div class="d-flex flex-wrap gap-1 mt-2" id="toolPills"></div>
+      </div>
+      <div class="card-body" id="resultGroups"></div>
+    </section>
+
+    <!-- raw logs -->
+    <section class="card shadow-sm mb-4">
+      <div class="card-header fw-semibold"><i class="bi bi-terminal text-primary"></i> Raw tool output</div>
+      <div class="card-body">
+        <ul class="nav nav-tabs" id="logTabs" role="tablist"></ul>
+        <div class="tab-content pt-2" id="logPanes"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="app-footer text-center py-4">
+  <strong>PyAssure</strong> · Complex Code Testing Dashboard – Python Edition · pytest · coverage.py · Pylint/Flake8 · Bandit · pycodestyle · Radon
+  <div class="small opacity-75">Academic software-testing project. Risk levels are heuristic estimates.</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

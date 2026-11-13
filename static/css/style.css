@@ -1,0 +1,58 @@
+:root {
+  --brand: #4f46e5; --brand-dark: #3730a3; --pass: #16a34a; --warn: #f59e0b; --fail: #dc2626;
+  --ink: #1e293b; --bg: #f1f5f9;
+}
+body { background: var(--bg); color: var(--ink); font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.app-nav { background: linear-gradient(120deg, #1e1b4b, #312e81 55%, #4f46e5); box-shadow: 0 2px 12px rgba(30,27,75,.35); }
+.brand-sub { font-size: .68rem; opacity: .75; font-weight: 400; letter-spacing: .02em; }
+.badge-py { background: #fbbf24; color: #3b2a00; font-weight: 600; font-size: .68rem; }
+.app-nav .nav-link { color: rgba(255,255,255,.8); } .app-nav .nav-link:hover { color: #fff; }
+.hero { background: #fff; border-radius: 14px; padding: 1.25rem 1.5rem; border-left: 5px solid var(--brand); box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.card { border: 0; border-radius: 14px; } .card-header { background: #fff; border-bottom: 1px solid #e2e8f0; border-radius: 14px 14px 0 0 !important; }
+.card-footer { background: #f8fafc; border-top: 1px solid #e2e8f0; border-radius: 0 0 14px 14px !important; }
+.CodeMirror { height: 420px; font-size: 14px; font-family: "JetBrains Mono", "Fira Code", Consolas, monospace; border-radius: 0; }
+.cm-flash { background: rgba(251,191,36,.35) !important; }
+.run-btn { background: linear-gradient(120deg, var(--brand), #7c3aed); border: 0; box-shadow: 0 4px 14px rgba(79,70,229,.4); }
+.run-btn:hover { background: linear-gradient(120deg, var(--brand-dark), #6d28d9); }
+.run-btn:disabled { opacity: .85; }
+.empty-state i { color: #94a3b8; }
+
+.metric .card-body { padding: 1.1rem .8rem; }
+.metric-label { font-weight: 600; margin-top: .5rem; }
+.big-number { font-size: 2.6rem; font-weight: 700; line-height: 1; min-height: 88px; display: flex; align-items: center; justify-content: center; }
+.ring { --p: 0; --c: var(--brand); width: 92px; height: 92px; border-radius: 50%; margin: 0 auto;
+  background: conic-gradient(var(--c) calc(var(--p) * 1%), #e2e8f0 0); display: grid; place-items: center; position: relative; }
+.ring::before { content: ""; position: absolute; inset: 9px; background: #fff; border-radius: 50%; }
+.ring span { position: relative; font-weight: 700; font-size: 1.25rem; }
+.risk-pill { font-size: 1.15rem; padding: .35rem .9rem; border-radius: 99px; color: #fff; background: #64748b; letter-spacing: .04em; }
+.risk-LOW { background: var(--pass); } .risk-MODERATE { background: #eab308; color: #422006; }
+.risk-HIGH { background: #f97316; } .risk-CRITICAL { background: var(--fail); } .risk-UNKNOWN { background: #64748b; }
+.stat .card-body { display: flex; align-items: center; gap: .8rem; padding: .9rem 1rem; } .stat i { font-size: 1.7rem; }
+.stat-num { font-size: 1.6rem; font-weight: 700; line-height: 1; } .stat-label { font-size: .8rem; color: #64748b; }
+
+.band-bar { display: flex; border-radius: 8px; overflow: hidden; text-align: center; font-size: .7rem; font-weight: 700; color: #fff; }
+.band-bar div { flex: 1; padding: .35rem 0; } .band-bar small { font-weight: 400; }
+.b-low { background: var(--pass); } .b-mod { background: #eab308; color: #422006 !important; } .b-high { background: #f97316; } .b-crit { background: var(--fail); }
+.band-marker { position: relative; height: 18px; } .band-marker i { position: absolute; transform: translateX(-50%); font-size: 1.1rem; color: var(--ink); transition: left .5s; }
+.chart-box { position: relative; height: 290px; }
+
+.tool-group { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 1rem; overflow: hidden; }
+.tool-head { background: #f8fafc; padding: .6rem 1rem; display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.tool-head .score { margin-left: auto; font-weight: 600; font-size: .85rem; }
+.test-row { border-top: 1px solid #e2e8f0; }
+.test-row > button { width: 100%; text-align: left; background: #fff; border: 0; padding: .65rem 1rem; display: flex; gap: .75rem; align-items: center; }
+.test-row > button:hover { background: #f8fafc; }
+.test-id { font-family: Consolas, monospace; font-size: .8rem; color: #475569; min-width: 112px; }
+.test-name { flex: 1; font-weight: 500; }
+.st { font-size: .72rem; font-weight: 700; padding: .3rem .65rem; border-radius: 99px; color: #fff; letter-spacing: .04em; }
+.st-PASSED { background: var(--pass); } .st-WARNING { background: var(--warn); color: #422006; } .st-FAILED { background: var(--fail); }
+.test-detail { padding: .5rem 1rem 1rem 1rem; background: #fcfcfd; font-size: .9rem; }
+.test-detail dt { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #64748b; margin-top: .6rem; }
+.test-detail dd { margin: 0; }
+.line-link { cursor: pointer; font-family: Consolas, monospace; }
+.finding-list { max-height: 230px; overflow: auto; font-size: .82rem; margin: 0; padding-left: 1.1rem; }
+.finding-list .src { color: #64748b; font-size: .72rem; }
+pre.log { background: #0f172a; color: #e2e8f0; padding: 1rem; border-radius: 10px; max-height: 340px; overflow: auto; font-size: .78rem; white-space: pre-wrap; }
+.app-footer { background: #1e1b4b; color: #fff; margin-top: 2rem; }
+.pill-btn { border-radius: 99px; }
+@media (max-width: 575px) { .test-id { min-width: 0; font-size: .7rem; } .test-row > button { flex-wrap: wrap; } .CodeMirror { height: 320px; } .big-number { font-size: 2rem; } }
