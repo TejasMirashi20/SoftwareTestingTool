@@ -20,6 +20,7 @@ the code, branding and UI here are original.
 Each result has: ID, tool, name, description, **PASSED / WARNING / FAILED**, explanation, line number
 (click it to jump in the editor), suggested correction and the individual findings.
 
+
 ### How the numbers are calculated (nothing is hard-coded)
 * **Health score** = (passed + 0.5 × warnings) / 25 × 100
 * **Statement coverage** – measured by coverage.py while the PyTest module imports the code and calls every
